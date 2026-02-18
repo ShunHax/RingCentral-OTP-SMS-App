@@ -1,6 +1,0 @@
-﻿Build started at 6:04 PM...
-1>------ Build started: Project: OTP Texting App, Configuration: Debug Any CPU ------
-1>Skipping analyzers to speed up the build. You can execute 'Build' or 'Rebuild' command to run analyzers.
-1>OTP Texting App -> C:\Users\CharlesHammer\source\repos\OTP Texting App\OTP Texting App\bin\Debug\net8.0-windows\OTP Texting App.dll
-========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
-========== Build completed at 6:04 PM and took 00.980 seconds ==========
