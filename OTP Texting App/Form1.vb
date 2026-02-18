@@ -1,4 +1,4 @@
-﻿Imports RingCentral
+Imports RingCentral
 Imports System.Text
 Imports System.Net.Http
 Imports System.Net
@@ -37,6 +37,10 @@ Public Class Form1
 
     ' Reference to the reauthorization dialog
     Private reauthorizationDialog As CustomPrompt = Nothing
+
+    ' Easter egg click counter
+    Private easterEggClickCount As Integer = 0
+    Private Const EASTER_EGG_CLICKS_REQUIRED As Integer = 5
 
     Private listener As HttpListener
 
@@ -527,5 +531,15 @@ Public Class Form1
 
     Private Sub lblDescription_Click(sender As Object, e As EventArgs) Handles lblDescription.Click
 
+    End Sub
+
+    Private Sub lblCreator_Click(sender As Object, e As EventArgs) Handles lblCreator.Click
+        easterEggClickCount += 1
+
+        If easterEggClickCount >= EASTER_EGG_CLICKS_REQUIRED Then
+            easterEggClickCount = 0 ' Reset counter
+            Dim easterEgg As New EasterEggForm()
+            easterEgg.ShowDialog(Me)
+        End If
     End Sub
 End Class

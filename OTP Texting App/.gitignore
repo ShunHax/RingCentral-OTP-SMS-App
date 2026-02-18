@@ -29,6 +29,7 @@ desktop.ini
 
 # Ignore publish profiles
 **/My Project/PublishProfiles/
+**/Release Builds/
 
 # Ignore NuGet cache
 project.nuget.cache

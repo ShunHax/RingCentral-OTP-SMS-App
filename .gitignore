@@ -45,3 +45,4 @@ project.nuget.cache
 !README.md
 !LICENSE
 Output-Build.txt
+Release Builds/
