@@ -9,14 +9,14 @@ Imports System.Reflection
 Public Class Form1
 
     ' Timer to regenerate OTP every 30 seconds
-    Private WithEvents otpTimer As New Timer()
+    Private WithEvents otpTimer As New Timer() With {.Interval = 1000}
     Private countdown As Integer = 30 ' Countdown starts from 30 seconds
 
     ' Timer to check token expiration
-    Private WithEvents tokenRefreshTimer As New Timer()
+    Private WithEvents tokenRefreshTimer As New Timer() With {.Interval = 60000} ' 60 seconds
 
     ' Timer to update token countdown every second
-    Private WithEvents tokenCountdownTimer As New Timer()
+    Private WithEvents tokenCountdownTimer As New Timer() With {.Interval = 1000} ' 1 second
 
     ' Variable to hold the access token in memory
     Private accessToken As String = String.Empty
@@ -44,10 +44,8 @@ Public Class Form1
     Private Sub StartHttpListener()
         Try
             ' Dispose the existing listener if it's not null
-            If listener IsNot Nothing Then
-                listener.Close()
-                listener = Nothing
-            End If
+            listener?.Close()
+            listener = Nothing
 
             ' Create a new HttpListener instance
             listener = New HttpListener()
@@ -62,18 +60,15 @@ Public Class Form1
         End Try
     End Sub
 
-
-
     ' Stop the HTTP listener
     Private Sub StopHttpListener()
-        If listener IsNot Nothing AndAlso listener.IsListening Then
+        If listener?.IsListening Then
             listener.Stop()
             listener.Close()
             Log("HTTP Listener stopped.")
         End If
     End Sub
 
-    ' Async method to listen for the authorization code
     ' Async method to listen for the authorization code
     Private Async Sub ListenForAuthorizationCode()
         Try
@@ -119,12 +114,9 @@ Public Class Form1
             File.WriteAllText(templatePath, "Your OTP verification code is: |otp-code|")
         End If
     End Sub
+
     Private Sub UpdateSendOtpButtonState()
-        If String.IsNullOrEmpty(accessToken) OrElse tokenExpiration <= DateTime.Now Then
-            btnSendOtp.Enabled = False
-        Else
-            btnSendOtp.Enabled = True
-        End If
+        btnSendOtp.Enabled = Not String.IsNullOrEmpty(accessToken) AndAlso tokenExpiration > DateTime.Now
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -137,23 +129,18 @@ Public Class Form1
         ' Extract WebView2Loader.dll from resources
         ExtractWebView2Loader()
 
-        ' Set timer interval to 1 second (1000 milliseconds) for countdown and start it
-        otpTimer.Interval = 1000
+        ' Start OTP timer and generate first OTP immediately
         otpTimer.Start()
         lblCountdown.Text = "Next OTP in:" & Environment.NewLine & countdown & " seconds"
-        GenerateAndDisplayOtp() ' Generate first OTP immediately
+        GenerateAndDisplayOtp()
 
         ' Initialize progress bar for countdown
         pbCountdown.Minimum = 0
         pbCountdown.Maximum = 30
         pbCountdown.Value = countdown
 
-        ' Set up token refresh timer to check every minute
-        tokenRefreshTimer.Interval = 60000 ' 60 seconds
+        ' Start token refresh and countdown timers
         tokenRefreshTimer.Start()
-
-        ' Set up token countdown timer to update every second
-        tokenCountdownTimer.Interval = 1000 ' 1 second
         tokenCountdownTimer.Start()
 
         ' Verify the message template file exists
@@ -288,15 +275,11 @@ Public Class Form1
                     Log("Full-expiration prompt closed.")
                 End If
 
-
                 ' Stop the countdown timer
                 tokenCountdownTimer.Stop()
             End If
         End If
     End Sub
-
-
-
 
     Private Sub ReauthorizationDialog_Closed(sender As Object, e As EventArgs)
         If reauthorizationDialog IsNot Nothing Then
@@ -310,7 +293,6 @@ Public Class Form1
             reauthorizationDialog = Nothing
         End If
     End Sub
-
 
     ' Check for token expiration and prompt for re-authentication if expired.
     Private Sub HandleTokenExpiration()
@@ -542,4 +524,8 @@ Public Class Form1
             End If
         End Using
     End Function
+
+    Private Sub lblDescription_Click(sender As Object, e As EventArgs) Handles lblDescription.Click
+
+    End Sub
 End Class

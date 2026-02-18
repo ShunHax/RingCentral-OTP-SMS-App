@@ -29,4 +29,8 @@
         UserResponse = DialogResult.No
         Me.Close()
     End Sub
+
+    Private Sub lblMessage_Click(sender As Object, e As EventArgs) Handles lblMessage.Click
+
+    End Sub
 End Class

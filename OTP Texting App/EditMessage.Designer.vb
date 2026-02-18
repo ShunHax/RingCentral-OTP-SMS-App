@@ -95,7 +95,7 @@ Partial Class EditMessage
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        Label1.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
         Label1.ForeColor = Color.LightGray
         Label1.Location = New Point(169, 2)
         Label1.Name = "Label1"
@@ -106,7 +106,7 @@ Partial Class EditMessage
         ' EditMessage
         ' 
         AccessibleName = ""
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.FromArgb(CByte(30), CByte(30), CByte(30))
         ClientSize = New Size(468, 277)

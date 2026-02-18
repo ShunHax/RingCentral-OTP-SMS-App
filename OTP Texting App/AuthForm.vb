@@ -8,9 +8,8 @@ Imports System.Net
 Imports System.Security.Cryptography
 Imports System.Text
 
-
 Public Class AuthForm
-    Private parentFormReference As Form1 ' Renamed to avoid ambiguity
+    Private ReadOnly parentFormReference As Form1 ' Use ReadOnly for immutability
 
     Public Sub New(parent As Form1)
         InitializeComponent()
@@ -31,8 +30,6 @@ Public Class AuthForm
         End Try
     End Sub
 
-
-
     Private Async Sub AuthForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Try
             Log("AuthForm Load Started")
@@ -48,12 +45,12 @@ Public Class AuthForm
 
             ' Construct the authorization URL with PKCE parameters
             Dim authorizationUrl = $"{AppConstants.BASE_URL}/restapi/oauth/authorize" &
-                               $"?response_type=code" &
-                               $"&client_id={AppConstants.CLIENT_ID}" &
-                               $"&redirect_uri={Uri.EscapeDataString(AppConstants.REDIRECT_URI)}" &
-                               $"&state=1234" &
-                               $"&code_challenge={codeChallenge}" &
-                               $"&code_challenge_method=S256"
+                                   $"?response_type=code" &
+                                   $"&client_id={AppConstants.CLIENT_ID}" &
+                                   $"&redirect_uri={Uri.EscapeDataString(AppConstants.REDIRECT_URI)}" &
+                                   $"&state=1234" &
+                                   $"&code_challenge={codeChallenge}" &
+                                   $"&code_challenge_method=S256"
             Log($"Authorization URL: {authorizationUrl}")
 
             ' Load the authorization URL in WebView2
@@ -63,7 +60,6 @@ Public Class AuthForm
             Log("Error during form load: " & ex.Message)
         End Try
     End Sub
-
 
     Private Sub wvAuth_NavigationStarting(sender As Object, e As CoreWebView2NavigationStartingEventArgs) Handles wvAuth.NavigationStarting
         Try
@@ -104,9 +100,10 @@ Public Class AuthForm
     Private Shared codeChallenge As String
 
     Private Sub GenerateCodeVerifierAndChallenge()
-        Dim rng = New Random()
         Dim randomBytes(31) As Byte
-        rng.NextBytes(randomBytes)
+        Using rng As New RNGCryptoServiceProvider()
+            rng.GetBytes(randomBytes)
+        End Using
 
         ' Generate code verifier (base64 URL-safe string)
         codeVerifier = Convert.ToBase64String(randomBytes).Replace("+", "-").Replace("/", "_").Replace("=", "")
@@ -116,7 +113,6 @@ Public Class AuthForm
             Dim hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier))
             codeChallenge = Convert.ToBase64String(hash).Replace("+", "-").Replace("/", "_").Replace("=", "")
         End Using
-
     End Sub
 
     ' Method to exchange authorization code for access token
@@ -139,11 +135,10 @@ Public Class AuthForm
                 If response.IsSuccessStatusCode Then
                     Dim jsonObj = JObject.Parse(json)
                     If jsonObj("access_token") IsNot Nothing Then
-                        ' Override expires_in for testing purposes
-                        Dim testExpiresIn = 30 ' Set to 30 seconds for testing
+                        Dim expiresIn As Integer = If(Integer.TryParse(jsonObj("expires_in")?.ToString(), expiresIn), expiresIn, 3600)
                         Return New TokenResponse With {
                             .AccessToken = jsonObj("access_token").ToString(),
-                            .Expiration = DateTime.Now.AddSeconds(testExpiresIn)
+                            .Expiration = DateTime.Now.AddSeconds(expiresIn)
                         }
                     Else
                         Log($"Error exchanging authorization code: {json}")
@@ -172,7 +167,7 @@ Public Class AuthForm
         Return Nothing
     End Function
 
-
-
-
+    Private Sub wvAuth_Click(sender As Object, e As EventArgs) Handles wvAuth.Click
+        ' No implementation needed
+    End Sub
 End Class

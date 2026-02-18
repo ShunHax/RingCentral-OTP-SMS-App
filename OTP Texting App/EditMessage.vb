@@ -48,4 +48,8 @@ Public Class EditMessage
         ' Close the editor without saving
         Me.DialogResult = DialogResult.Cancel
     End Sub
+
+    Private Sub txtMessage_TextChanged(sender As Object, e As EventArgs) Handles txtMessage.TextChanged
+
+    End Sub
 End Class
